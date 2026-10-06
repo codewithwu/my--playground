@@ -1,4 +1,5 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react'
+import { Button } from './ui/button'
 
 interface Props {
   children: ReactNode
@@ -41,20 +42,13 @@ export class ErrorBoundary extends Component<Props, State> {
             {error.message}
           </pre>
           <div className="mt-5 flex justify-center gap-2">
-            <button
-              type="button"
-              onClick={() => this.setState({ error: null })}
-              className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-4 py-2 text-sm font-medium"
-            >
+            {/* 走 Button 原语,否则这两颗按钮不会跟着主题走 —— 错误页恰恰是最需要看得清的时候 */}
+            <Button type="button" onClick={() => this.setState({ error: null })}>
               重试
-            </button>
-            <button
-              type="button"
-              onClick={() => window.location.reload()}
-              className="border-input hover:bg-accent rounded-md border px-4 py-2 text-sm font-medium"
-            >
+            </Button>
+            <Button type="button" variant="outline" onClick={() => window.location.reload()}>
               刷新页面
-            </button>
+            </Button>
           </div>
         </div>
       </div>

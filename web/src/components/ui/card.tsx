@@ -1,10 +1,17 @@
 import type { HTMLAttributes } from 'react'
 import { cn } from '../../lib/utils'
 
+/**
+ * 卡片。
+ *
+ * 现在只在**确实需要一个边界**的地方用:表单、输入区、长文正文。
+ * 凡是并列的数据指标都改用发丝线分区(LedgerSection / LedgerBlock)——
+ * 整页十几个一模一样的圆角盒子会让所有分组看起来同样重要。
+ */
 export function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn('rounded-lg border bg-card text-card-foreground shadow-xs', className)}
+      className={cn('bg-card text-card-foreground rounded-lg border', className)}
       {...props}
     />
   )

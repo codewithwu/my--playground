@@ -10,9 +10,9 @@ import {
   formatUpdated,
 } from '../../lib/format'
 import { Alert } from '../../components/ui/alert'
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card'
 import { Skeleton } from '../../components/ui/skeleton'
-import { DeltaText, MissingValue, StatCard } from '../../components/StatCard'
+import { DataRow, DeltaText, Metric, MetricBand, MetricCell, MissingValue } from '../../components/Metric'
+import { LedgerBlock, LedgerSection } from '../../components/Ledger'
 import { QuotaMeter } from '../../components/QuotaMeter'
 import { PageHeader } from '../../components/layout/AppShell'
 import { AudienceSection } from './AudienceSection'
@@ -21,7 +21,7 @@ import { InteractionsSection } from './InteractionsSection'
 const MINUTE = 60 * 1000
 
 export function OverviewPage() {
-  // staleTime 按 PLAN.md §5.3 分级。查询本身不消耗额度(02 除外,
+  // staleTime 按接口能力分级。查询本身不消耗额度(02 除外,
   // 但 02 不消耗任何额度),creator 额度只有 200/天,隐式重取是主要风险。
   const quotaQuery = useQuery({
     queryKey: ['quota'],
@@ -43,7 +43,11 @@ export function OverviewPage() {
   const audienceStatus = readerAudience?.Status
 
   if (statsQuery.isError) {
-    return <Alert tone="destructive">{describeError(statsQuery.error)}</Alert>
+    return (
+      <div className="p-6">
+        <Alert tone="destructive">{describeError(statsQuery.error)}</Alert>
+      </div>
+    )
   }
 
   if (statsQuery.isPending) {
@@ -51,7 +55,7 @@ export function OverviewPage() {
   }
 
   return (
-    <div className="space-y-6 p-6 lg:p-8">
+    <div className="space-y-10 p-6 lg:p-8">
       <PageHeader
         title="总览"
         description={
@@ -70,91 +74,94 @@ export function OverviewPage() {
         </Alert>
       ) : null}
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard
-          label="总阅读"
-          value={metrics?.ViewCount === undefined ? <MissingValue /> : formatCount(metrics.ViewCount)}
-        />
-        <StatCard
-          label="获赞"
-          value={
-            metrics?.UpvoteCount === undefined ? <MissingValue /> : formatCount(metrics.UpvoteCount)
-          }
-        />
-        <StatCard
-          label="收藏"
-          value={
-            metrics?.CollectCount === undefined ? <MissingValue /> : formatCount(metrics.CollectCount)
-          }
-        />
-        <StatCard
-          label="评论"
-          value={
-            metrics?.CommentCount === undefined
-              ? <MissingValue />
-              : formatCount(metrics.CommentCount)
-          }
-        />
-      </div>
+      {/* 四个头条指标。图标全部拿掉 —— 数字本身够醒目了,
+          图标只会把这一排的高低推得不齐。 */}
+      <MetricBand>
+        <MetricCell>
+          <Metric
+            label="总阅读"
+            value={metrics?.ViewCount === undefined ? <MissingValue /> : formatCount(metrics.ViewCount)}
+          />
+        </MetricCell>
+        <MetricCell>
+          <Metric
+            label="获赞"
+            value={
+              metrics?.UpvoteCount === undefined ? <MissingValue /> : formatCount(metrics.UpvoteCount)
+            }
+          />
+        </MetricCell>
+        <MetricCell>
+          <Metric
+            label="收藏"
+            value={
+              metrics?.CollectCount === undefined ? <MissingValue /> : formatCount(metrics.CollectCount)
+            }
+          />
+        </MetricCell>
+        <MetricCell>
+          <Metric
+            label="评论"
+            value={
+              metrics?.CommentCount === undefined ? <MissingValue /> : formatCount(metrics.CommentCount)
+            }
+          />
+        </MetricCell>
+      </MetricBand>
 
-      <div className="grid gap-4 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>粉丝</CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-4 sm:grid-cols-3">
-            <div>
-              <p className="text-sm text-muted-foreground">粉丝总数</p>
-              <p className="tabular mt-1 text-2xl font-semibold tracking-tight">
-                {followers?.Total === undefined ? <MissingValue /> : formatCount(followers.Total)}
-              </p>
+      <LedgerSection title="账号">
+        <div className="grid gap-8 lg:grid-cols-[1.4fr_1fr]">
+          <LedgerBlock title="粉丝">
+            <div className="grid grid-cols-3 gap-4 pt-3">
+              <Metric
+                label="总数"
+                value={followers?.Total === undefined ? <MissingValue /> : formatCount(followers.Total)}
+              />
+              <Metric
+                label="活跃粉丝"
+                value={
+                  followers?.ActiveCount === undefined ? (
+                    <MissingValue />
+                  ) : (
+                    formatCount(followers.ActiveCount)
+                  )
+                }
+                /* String 型且已带百分号,原样透传 */
+                hint={formatRate(followers?.ActiveRatio)}
+              />
+              <Metric
+                label="昨日变化"
+                value={
+                  <>
+                    新增{' '}
+                    <DeltaText positive={hasPositive(followers?.NewYesterday)}>
+                      {formatDelta(followers?.NewYesterday)}
+                    </DeltaText>
+                  </>
+                }
+                hint={
+                  <>
+                    取关{' '}
+                    <DeltaText positive={hasPositive(followers?.CancelledYesterday)}>
+                      {formatCount(followers?.CancelledYesterday)}
+                    </DeltaText>
+                  </>
+                }
+              />
             </div>
-            <div>
-              <p className="text-sm text-muted-foreground">活跃粉丝</p>
-              <p className="tabular mt-1 text-2xl font-semibold tracking-tight">
-                {followers?.ActiveCount === undefined ? (
-                  <MissingValue />
-                ) : (
-                  formatCount(followers.ActiveCount)
-                )}
-              </p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                {/* String 型且已带百分号,原样透传 */}
-                {formatRate(followers?.ActiveRatio)}
-              </p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">昨日变化</p>
-              <p className="tabular mt-1 text-sm">
-                新增 <DeltaText positive={hasPositive(followers?.NewYesterday)}>
-                  {formatDelta(followers?.NewYesterday)}
-                </DeltaText>
-              </p>
-              <p className="tabular mt-0.5 text-sm">
-                取关 <DeltaText positive={hasPositive(followers?.CancelledYesterday)}>
-                  取关 {formatCount(followers?.CancelledYesterday)}
-                </DeltaText>
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+          </LedgerBlock>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>创作数量</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2 text-sm">
-            <Row label="回答" value={creation?.Answer} />
-            <Row label="文章" value={creation?.Article} />
-            <Row label="视频" value={creation?.Video} />
-          </CardContent>
-        </Card>
-      </div>
+          <LedgerBlock title="创作数量">
+            <dl className="pt-0.5">
+              <DataRow label="回答" value={count(creation?.Answer)} />
+              <DataRow label="文章" value={count(creation?.Article)} />
+              <DataRow label="视频" value={count(creation?.Video)} />
+            </dl>
+          </LedgerBlock>
+        </div>
+      </LedgerSection>
 
-      <AudienceSection
-        reader={readerAudience}
-        follower={followerProfile?.Audience}
-      />
+      <AudienceSection reader={readerAudience} follower={followerProfile?.Audience} />
 
       <InteractionsSection
         interactions={followerProfile?.Interactions}
@@ -175,29 +182,22 @@ function hasPositive(value?: number): boolean | undefined {
   return value > 0
 }
 
-function Row({ label, value }: { label: string; value?: number }) {
-  return (
-    <div className="flex items-baseline justify-between">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="tabular font-medium">
-        {value === undefined ? <MissingValue /> : formatCount(value)}
-      </span>
-    </div>
-  )
+function count(value?: number) {
+  return value === undefined ? <MissingValue /> : formatCount(value)
 }
 
 function OverviewSkeleton() {
   return (
-    <div className="space-y-6 p-6 lg:p-8">
+    <div className="space-y-10 p-6 lg:p-8">
       <Skeleton className="h-7 w-40" />
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-y-7 border-y border-border px-1 py-6 lg:grid-cols-4">
         {Array.from({ length: 4 }, (_, i) => (
-          <Skeleton key={i} className="h-24" />
+          <Skeleton key={i} className="h-12 lg:pl-7 lg:first:pl-0" />
         ))}
       </div>
-      <div className="grid gap-4 lg:grid-cols-3">
-        <Skeleton className="h-44 lg:col-span-2" />
-        <Skeleton className="h-44" />
+      <div className="space-y-3">
+        <Skeleton className="h-5 w-24" />
+        <Skeleton className="h-24 w-full" />
       </div>
     </div>
   )

@@ -59,7 +59,7 @@ export function DiscoverPage() {
   })
 
   return (
-    <div className="space-y-5 p-6 lg:p-8">
+    <div className="space-y-10 p-6 lg:p-8">
       <PageHeader
         title="发现"
         description="知乎热榜与站内、全网搜索。搜索会消耗你账号的搜索额度(各 5000 次/天)。"
@@ -110,7 +110,7 @@ export function DiscoverPage() {
             )}
 
             <span className="text-muted-foreground ml-auto text-xs">
-              {mode === 'zhihu' ? '最多 10 条' : '最多 20 条'} · 无分页
+              {mode === 'zhihu' ? '最多 10 条' : '最多 20 条'},接口不提供分页
             </span>
           </div>
         </CardContent>
@@ -147,8 +147,8 @@ function ModeButton({
       onClick={onClick}
       className={
         active
-          ? 'bg-background rounded-[5px] px-3 py-1 text-sm font-medium shadow-xs'
-          : 'text-muted-foreground rounded-[5px] px-3 py-1 text-sm hover:text-foreground'
+          ? 'bg-background rounded-sm px-3 py-1 text-sm font-medium shadow-xs'
+          : 'text-muted-foreground rounded-sm px-3 py-1 text-sm hover:text-foreground'
       }
     >
       {children}

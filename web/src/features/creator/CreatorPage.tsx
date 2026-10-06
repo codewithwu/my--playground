@@ -11,6 +11,7 @@ import { Button } from '../../components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card'
 import { Input } from '../../components/ui/input'
 import { Skeleton } from '../../components/ui/skeleton'
+import { LedgerSection } from '../../components/Ledger'
 import { PageHeader } from '../../components/layout/AppShell'
 import { ContentDetail } from './ContentDetail'
 
@@ -30,7 +31,7 @@ export function CreatorPage() {
  *
  * 接口里**没有「列出我的所有内容」这个能力** —— 11/09/10 都必须传 ContentUrl。
  * 所以可选内容只能来自账号数据里已知的链接(互动内容 + 带来关注的内容),
- * 其余靠用户粘贴。切片 0 之前的设想「列出全部作品」是不存在的接口。
+ * 其余靠用户粘贴。设想中的「列出全部作品」是不存在的接口。
  */
 function ContentPicker({ onSelect }: { onSelect: (url: string) => void }) {
   const [input, setInput] = useState('')
@@ -68,12 +69,13 @@ function ContentPicker({ onSelect }: { onSelect: (url: string) => void }) {
   }
 
   return (
-    <div className="space-y-5 p-6 lg:p-8">
+    <div className="space-y-10 p-6 lg:p-8">
       <PageHeader
         title="我的创作"
         description="查看单篇内容的指标、正文和评论。知乎开放平台没有「列出全部作品」的接口,所以这里列出的是账号数据中已知的链接,其余请粘贴内容链接。"
       />
 
+      {/* 输入区保留卡片:这里确实有一个需要被框住的边界(一个要填的东西） */}
       <Card>
         <CardHeader className="pb-3">
           <CardTitle>粘贴内容链接</CardTitle>
@@ -87,6 +89,7 @@ function ContentPicker({ onSelect }: { onSelect: (url: string) => void }) {
                 setInputError(null)
               }}
               placeholder="https://www.zhihu.com/answer/..."
+              /* 等宽在这里有实际用途:逐段核对一条长 URL */
               className="font-mono text-xs"
               aria-label="内容链接"
             />
@@ -103,35 +106,30 @@ function ContentPicker({ onSelect }: { onSelect: (url: string) => void }) {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle>账号数据中已知的内容</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {statsQuery.isPending ? (
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-4/5" />
-            </div>
-          ) : statsQuery.isError ? (
-            <Alert tone="destructive">{describeError(statsQuery.error)}</Alert>
-          ) : known.length === 0 ? (
-            <p className="text-muted-foreground text-sm">
-              账号数据里暂无可钻取的内容。直接粘贴一条内容链接即可。
-            </p>
-          ) : (
-            <ul className="divide-border divide-y">
-              {known.map((item) => (
-                <KnownContentRow
-                  key={`${item.ContentType}-${item.ContentToken}`}
-                  item={item}
-                  onSelect={onSelect}
-                />
-              ))}
-            </ul>
-          )}
-        </CardContent>
-      </Card>
+      <LedgerSection title="账号数据中已知的内容">
+        {statsQuery.isPending ? (
+          <div className="space-y-2">
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-4/5" />
+          </div>
+        ) : statsQuery.isError ? (
+          <Alert tone="destructive">{describeError(statsQuery.error)}</Alert>
+        ) : known.length === 0 ? (
+          <p className="text-muted-foreground text-sm">
+            账号数据里暂无可钻取的内容。直接粘贴一条内容链接即可。
+          </p>
+        ) : (
+          <ul>
+            {known.map((item) => (
+              <KnownContentRow
+                key={`${item.ContentType}-${item.ContentToken}`}
+                item={item}
+                onSelect={onSelect}
+              />
+            ))}
+          </ul>
+        )}
+      </LedgerSection>
     </div>
   )
 }
@@ -145,15 +143,15 @@ function KnownContentRow({
 }) {
   const href = contentUrl(item)
   return (
-    <li className="flex items-center gap-3 py-2.5">
+    <li className="flex items-center gap-3 border-b border-border py-3 last:border-b-0">
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-medium" title={item.Title}>
           {item.Title ?? '未命名内容'}
         </p>
+        {/* ContentType 是接口给的开放字符串,没有枚举。直接原样显示,
+            不套小方框、也不做大写 —— 那样只是把一个值打扮成了标签。 */}
         <p className="text-muted-foreground mt-0.5 flex items-center gap-2 text-xs">
-          <span className="rounded border px-1 py-px text-[10px] uppercase">
-            {item.ContentType}
-          </span>
+          <span>{item.ContentType}</span>
           {item.FollowCount === undefined ? null : (
             <span className="tabular">{formatCount(item.FollowCount)} 关注</span>
           )}

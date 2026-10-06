@@ -7,7 +7,31 @@
       name="description"
       content="知乎创作者的内容诊断仪表盘与选题搜索雷达。数据来自知乎开放平台,凭据仅存于浏览器。"
     />
+    <meta name="theme-color" content="#f7f7f8" />
     <title>知乎创作者工作台</title>
+    <script>
+      /* 首屏定主题。必须在 React 之前跑,否则暗色用户会看到一闪白屏。
+         这段逻辑与 src/lib/theme.ts 的 applyTheme 重复 —— 它必须内联,
+         因为模块脚本要先下载解析,那时候用户已经看到白底了。 */
+      ;(function () {
+        try {
+          var stored = localStorage.getItem('zhihu-studio-theme')
+          var theme =
+            stored === 'light' || stored === 'dark'
+              ? stored
+              : matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light'
+          document.documentElement.dataset.theme = theme
+          document.documentElement.style.colorScheme = theme
+          document
+            .querySelector('meta[name="theme-color"]')
+            .setAttribute('content', theme === 'dark' ? '#0a0a0b' : '#f7f7f8')
+        } catch (e) {
+          /* localStorage 在隐私模式下可能抛错,放弃定主题即可 */
+        }
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>
