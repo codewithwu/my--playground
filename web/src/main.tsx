@@ -9,7 +9,7 @@ import './index.css'
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      // PLAN.md §5.3:全部显式指定,绝不依赖默认值。
+      // 全部显式指定,绝不依赖默认值。
       // 尤其 refetchOnWindowFocus —— 默认 true 会在每次切回标签页时重新请求,
       // 而 creator 额度只有 200/天,这类隐式请求会悄悄烧掉配额。
       refetchOnWindowFocus: false,
@@ -24,7 +24,7 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        {/* HashRouter:GitHub Pages 不做 history fallback,深链接会 404。见 PLAN.md §3.1 */}
+        {/* HashRouter:GitHub Pages 不做 history fallback,深链接会 404 */}
         <HashRouter>
           <App />
         </HashRouter>

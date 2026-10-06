@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from 'react'
 
 /**
- * Access Secret 存储。PLAN.md §6。
+ * Access Secret 存储。
  *
  * 用 sessionStorage 而不是 localStorage:
  * 关掉标签页即自动清除,共享电脑上下一个人打开是干净的。

@@ -18,7 +18,6 @@
 
 **它不是什么**:18 篇接口文档里只用了 8 个。没有趋势图(接口不提供时间序列),
 没有 PDF 解析和 PPT 生成(额度只有 10 次/天),没有日期筛选(传了日期参数会返回全 0)。
-取舍理由见 [`PLAN.md`](./PLAN.md)。
 
 ## 快速开始
 
@@ -87,8 +86,6 @@ React 19 · Vite 8 · TypeScript · Tailwind CSS 4 · TanStack Query 5 · DOMPur
 - ESLint 规则强制 `dangerouslySetInnerHTML` 只允许出现在 `components/SafeHtml.tsx`
 - 外链一律 `rel="noopener noreferrer"`,并剥离接口附带的 `utm_*` 追踪参数
 
-安全审计结果与 12 种 XSS 载荷的验证记录见 [`PLAN.md`](./PLAN.md) §6、§2.11。
-
 ## 部署
 
 GitHub Actions 手动触发(`zhihu` 分支,`main` 保持干净):
@@ -111,7 +108,8 @@ web/src/
 └── features/         connect(门禁) / overview / creator / discover
 ```
 
-`docs/` 是 18 篇接口文档。`PLAN.md` 是这个项目的完整设计与全部实测结论 ——
+`docs/` 是 18 篇接口文档。文档与实测返回有出入的地方以代码为准 ——
+`lib/api/types.ts` 与 `lib/api/*.ts` 里带 ⚠️ 的注释逐条记录了实测结论,
 **遇到任何「接口为什么这样」的问题,答案基本都在那里。**
 
 ## 致谢

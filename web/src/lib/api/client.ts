@@ -21,7 +21,7 @@ type Bucket = 'creator' | 'normal'
 interface RequestOptions {
   path: string
   query?: Record<string, string | number | undefined>
-  /** creator 桶串行(并发 1),其余并发 4。PLAN.md §5.2 */
+  /** creator 桶串行(并发 1),其余并发 4 */
   bucket?: Bucket
 }
 
@@ -68,7 +68,7 @@ async function request<T>({ path, query, bucket = 'normal' }: RequestOptions): P
 
 /**
  * 额度查询。不消耗额度,所以用来做门禁校验和常驻额度条都是安全的。
- * ⚠️ 实测计数滞后约 3 分钟,界面必须标注「约」值。PLAN.md §2.2
+ * ⚠️ 实测计数滞后约 3 分钟,界面必须标注「约」值。
  */
 export function fetchQuota() {
   return request<QuotaEntry[]>({ path: '/api/v1/quota' })
@@ -76,7 +76,7 @@ export function fetchQuota() {
 
 /**
  * 账号创作数据。
- * ⚠️ 不要传 StartDate / EndDate —— 实测一传就返回全 0。PLAN.md §2.5
+ * ⚠️ 不要传 StartDate / EndDate —— 实测一传就返回全 0。
  */
 export function fetchAccountStats() {
   return request<AccountStats>({
@@ -88,7 +88,7 @@ export function fetchAccountStats() {
 
 /* ── 切片 3:单篇内容钻取 ──
    三个接口都走 creator 桶(并发 1)。
-   计划 §5.2 要求优先级 11 → 09 → 10:统计卡最先出现,其次正文,最后评论。
+   设计要求优先级 11 → 09 → 10:统计卡最先出现,其次正文,最后评论。
    实现上依赖「调用顺序即入队顺序」:React Query 的三个 hook 在同一次渲染里
    按代码顺序发起 fetch,调度器是 FIFO,所以天然就是这个顺序。
    之所以不用重试解决限流,是因为限流在源头(并发=1)已经被消除了。
@@ -96,7 +96,7 @@ export function fetchAccountStats() {
 
 /**
  * 单篇创作数据。
- * ⚠️ 禁止传 StartDate / EndDate —— 实测一传就返回全 0(PLAN.md §2.5)。
+ * ⚠️ 禁止传 StartDate / EndDate —— 实测一传就返回全 0。
  */
 export function fetchContentStats(contentUrl: string) {
   return request<ContentStats>({
@@ -115,7 +115,7 @@ export function fetchContentDetail(contentUrl: string) {
   })
 }
 
-/** 评论。分页必须按 Paging.NextOffset 推进,不能按本页条数推断(PLAN.md 依据文档)。 */
+/** 评论。分页必须按 Paging.NextOffset 推进,不能按本页条数推断。 */
 export function fetchComments(contentUrl: string, offset = 0) {
   return request<CommentPage>({
     path: '/api/v1/user/content_comments',

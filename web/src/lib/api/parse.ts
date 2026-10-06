@@ -1,7 +1,7 @@
 import { isLosslessNumber, parse } from 'lossless-json'
 
 /**
- * 无损 JSON 解析。PLAN.md §2.9。
+ * 无损 JSON 解析。
  *
  * 文档在 09/10/11/12 四处要求「客户端应保留大整数精度」,理由是原生
  * JSON.parse 会把超过 2^53 的整数静默算错 —— 实测

@@ -1,6 +1,6 @@
 /**
  * 响应类型。字段依据**实测返回**而非文档表格 ——
- * 两者有出入的地方以实测为准,PLAN.md §2 有逐条记录。
+ * 两者有出入的地方以实测为准,逐条记录在本文件下方的字段注释里。
  */
 
 /** 统一信封。Code === 0 为成功,否则 Data 为 null。 */
@@ -119,7 +119,7 @@ export interface AccountStats {
   FollowerProfile?: FollowerProfile
 }
 
-/** 本应用实际使用的 4 个额度桶。实测每日额度见 PLAN.md §2.2。 */
+/** 本应用实际使用的 4 个额度桶。每日额度由 02 接口实时返回,不在此处硬编码。 */
 export type QuotaBucketId = 'creator' | 'hot_list' | 'zhihu_search' | 'global_search'
 
 export const USED_BUCKETS: QuotaBucketId[] = [
@@ -134,7 +134,7 @@ export const USED_BUCKETS: QuotaBucketId[] = [
 /**
  * 单篇指标(接口 11)。
  * ⚠️ 实测本账号不返回 ClickRate / ReadFinishedRate,不要为它们预留 UI。
- * ⚠️ 调用时禁止传 StartDate / EndDate —— 实测一传就返回全 0(PLAN.md §2.5)。
+ * ⚠️ 调用时禁止传 StartDate / EndDate —— 实测一传就返回全 0。
  */
 export interface ContentMetrics {
   ViewCount?: number

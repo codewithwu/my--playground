@@ -31,7 +31,7 @@ const PATH_SEGMENT: Record<string, string> = {
 /**
  * 由 ContentType + ContentToken 拼出内容链接。
  * ContentToken 可能超出安全整数范围,所以解析后是字符串 —— 直接拼接即可,
- * 这也是保留无损解析的实际意义之一(PLAN.md §2.9)。
+ * 这也是保留无损解析的实际意义之一。
  */
 export function contentUrl(item: AudienceContentItem): string {
   const segment = PATH_SEGMENT[item.ContentType] ?? 'p'

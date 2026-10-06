@@ -1,7 +1,7 @@
 import DOMPurify from 'dompurify'
 
 /**
- * 全应用唯一的 HTML 消毒出口。PLAN.md §2.11 §6。
+ * 全应用唯一的 HTML 消毒出口。
  *
  * 为什么必须有:09 的 `Body` 是知乎正文的富文本,10 的 `Content` 文档明确写
  * 「按不可信内容处理」。用户自己就能往正文里贴任意 HTML。

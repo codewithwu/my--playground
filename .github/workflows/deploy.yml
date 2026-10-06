@@ -1,6 +1,6 @@
-# GitHub Pages 部署(PLAN.md §11)
+# GitHub Pages 部署
 #
-# 手动触发(Q14 决定:zhihu 分支独立,main 保持干净)。
+# 手动触发:zhihu 分支独立开发,main 保持干净,避免每次推送都触发一次部署。
 # 触发方式:仓库 Actions 标签页 → 本工作流 → Run workflow
 #
 # 注意:本文件必须在仓库根 .github/workflows/ 下,不能放在 web/ 里。

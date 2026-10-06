@@ -57,7 +57,7 @@ https://codewithwu.github.io/my--playground/
 
 ### 为什么是手动触发
 
-工作流用的是 `workflow_dispatch`,不是 `push` 触发。设计原因见 `PLAN.md` Q14:
+工作流用的是 `workflow_dispatch`,不是 `push` 触发。原因是:
 `zhihu` 分支独立开发,`main` 保持干净,避免每次推送都触发一次部署。
 
 想改成推送即部署,把 `.github/workflows/deploy.yml` 里的:
