@@ -1,0 +1,60 @@
+# GitHub Pages 部署(PLAN.md §11)
+#
+# 手动触发(Q14 决定:zhihu 分支独立,main 保持干净)。
+# 触发方式:仓库 Actions 标签页 → 本工作流 → Run workflow
+#
+# 注意:本文件必须在仓库根 .github/workflows/ 下,不能放在 web/ 里。
+name: Deploy to GitHub Pages
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同一时间只允许一次部署,新触发会取消旧的
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        # 版本从 web/package.json 的 packageManager 字段读取
+
+      - uses: actions/setup-node@v4
+        with:
+          # 与本地保持一致,避免「本地能构建、CI 构建失败」
+          node-version: '24'
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+        working-directory: web
+
+      - name: 构建
+        run: pnpm build
+        working-directory: web
+
+      - name: 上传产物
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: web/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: 发布到 Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
