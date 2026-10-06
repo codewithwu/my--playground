@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>热点榜</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+SC:wght@400;600;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#E6E6DF;
+  --ink:#15171A;
+  --vermilion:#F0482B;
+  --acid:#D8F23C;
+  --muted:#6B6A62;
+
+  --gutter:4.5rem;
+  --measure:40rem;
+
+  --sans:"Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --serif:"Noto Serif SC","Songti SC","SimSun",serif;
+}
+
+*{box-sizing:border-box;}
+html{ -webkit-text-size-adjust:100%; }
+
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-variant-numeric:tabular-nums;
+  -webkit-font-smoothing:antialiased;
+}
+
+.page{
+  max-width:68rem;
+  margin:0 auto;
+  padding:0 2.5rem 5rem;
+}
+
+/* ---------- masthead ---------- */
+
+.masthead{
+  position:sticky;
+  top:0;
+  z-index:10;
+  background:var(--paper);
+  padding:1.5rem 0 1rem;
+  border-bottom:1px solid var(--ink);
+  display:flex;
+  align-items:baseline;
+  gap:1rem;
+  flex-wrap:wrap;
+}
+
+.masthead__date{
+  font-family:var(--serif);
+  font-weight:600;
+  font-size:1.0625rem;
+  letter-spacing:.01em;
+  margin:0;
+}
+
+.masthead__day{ font-size:.8125rem; color:var(--muted); font-weight:500; }
+
+.masthead__stamp{
+  margin-left:auto;
+  font-size:.8125rem;
+  font-weight:700;
+}
+
+.masthead__stamp .stamp-time{ color:var(--vermilion); margin-left:.5rem; }
+
+/* ---------- story rows ---------- */
+
+.list{ margin:0; padding:0; list-style:none; }
+
+.story{
+  --w:100%;
+  position:relative;
+  display:grid;
+  grid-template-columns:var(--gutter) 1fr;
+  padding:1.75rem 0 1.9rem;
+}
+
+/* the descending heat rule: full width at #1, tightening with each rank */
+.story::before{
+  content:"";
+  position:absolute;
+  top:0; left:0;
+  width:var(--w);
+  height:1px;
+  background:var(--ink);
+  opacity:.22;
+}
+
+.story:first-child{ padding-top:3rem; }
+
+.rank{
+  font-weight:900;
+  font-variant-numeric:tabular-nums;
+  line-height:.86;
+  letter-spacing:-.04em;
+  padding-top:.1em;
+}
+
+.rank-1{ font-size:3.25rem; }
+.rank-2{ font-size:2.25rem; }
+.rank-3{ font-size:2rem; }
+.rank-late{ font-size:1.5rem; }
+
+.story__body{ min-width:0; }
+
+.story__title{
+  font-family:var(--serif);
+  font-weight:900;
+  font-size:clamp(1.125rem,1.05rem + .5vw,1.5rem);
+  line-height:1.36;
+  letter-spacing:-.005em;
+  margin:0;
+  max-width:38rem;
+}
+
+.story--lead .story__title{
+  font-size:clamp(1.9rem,1rem + 4.4vw,3.9rem);
+  line-height:1.16;
+  letter-spacing:-.022em;
+  /* fit-content lets the marker band hug the longest line instead of the whole column */
+  max-width:34rem;
+  width:fit-content;
+  position:relative;
+  z-index:0;
+}
+
+.story--warm .story__title{
+  font-size:clamp(1.45rem,1rem + 2.2vw,2.3rem);
+  line-height:1.24;
+  letter-spacing:-.014em;
+  max-width:32rem;
+}
+
+/* highlighter: the lead gets a full block, the next two an underline marker */
+.story--lead .story__title::before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  left:-.14em; right:-.14em;
+  top:.05em; bottom:.15em;
+  background:var(--vermilion);
+  mix-blend-mode:multiply;
+  transform-origin:left center;
+  animation:wipe .68s cubic-bezier(.22,.7,.3,1) both;
+}
+
+@keyframes wipe{
+  from{ clip-path:inset(-.3em 100% -.3em 0); }
+  to{ clip-path:inset(-.3em); }
+}
+
+.story--warm .story__link{
+  background-image:linear-gradient(transparent 58%, var(--acid) 58%, var(--acid) 94%, transparent 94%);
+  padding:0 .1em;
+}
+
+.story__link{
+  color:inherit;
+  text-decoration:none;
+  text-decoration-color:rgba(21,23,26,.28);
+  text-underline-offset:.16em;
+  text-decoration-thickness:1px;
+}
+
+.story__link:hover{
+  text-decoration-line:underline;
+  text-decoration-thickness:2px;
+  text-decoration-color:var(--ink);
+}
+
+.story__link:focus-visible{
+  outline:2px solid var(--ink);
+  outline-offset:4px;
+  border-radius:1px;
+}
+
+.sr-only{
+  position:absolute;
+  width:1px; height:1px;
+  margin:-1px; padding:0;
+  overflow:hidden;
+  clip-path:inset(50%);
+  white-space:nowrap;
+}
+
+.story__meta{
+  margin:.7rem 0 0;
+  font-size:.8125rem;
+  font-weight:500;
+  color:var(--muted);
+}
+
+.story__meta .meta-source{ color:var(--ink); font-weight:700; }
+
+.story__summary{
+  font-family:var(--serif);
+  font-size:1rem;
+  line-height:1.85;
+  margin:.85rem 0 0;
+  max-width:var(--measure);
+  color:#33353A;
+}
+
+/* ---------- status ---------- */
+
+.status{
+  font-family:var(--serif);
+  font-size:1rem;
+  line-height:1.8;
+  margin:3rem 0 0;
+  max-width:var(--measure);
+  color:var(--muted);
+}
+
+.status code{
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:.875em;
+  background:rgba(21,23,26,.07);
+  padding:.15em .4em;
+  border-radius:2px;
+}
+
+/* ---------- colophon ---------- */
+
+.colophon{
+  margin-top:2.5rem;
+  padding-top:1.25rem;
+  border-top:1px solid var(--ink);
+  display:flex;
+  align-items:baseline;
+  gap:.75rem;
+  flex-wrap:wrap;
+}
+
+.colophon__source{
+  font-family:var(--serif);
+  font-weight:600;
+  font-size:.9375rem;
+  margin:0;
+}
+
+.colophon__note{ font-size:.8125rem; color:var(--muted); margin:0 0 0 auto; }
+
+/* ---------- responsive ---------- */
+
+@media (max-width:44rem){
+  :root{ --gutter:2.75rem; }
+  .page{ padding:0 1.25rem 4rem; }
+  .masthead{ padding:1.1rem 0 .8rem; }
+  .masthead__stamp{ margin-left:0; }
+  .rank-1{ font-size:2.5rem; }
+  .rank-2{ font-size:1.875rem; }
+  .rank-3{ font-size:1.625rem; }
+  .rank-late{ font-size:1.25rem; }
+  .story{ padding:1.4rem 0 1.55rem; }
+  .story:first-child{ padding-top:2.25rem; }
+  .colophon__note{ margin-left:0; }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .story--lead .story__title::before{ animation:none; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="masthead">
+    <p class="masthead__date" id="mDate">热点榜</p>
+    <span class="masthead__day" id="mDay"></span>
+    <span class="masthead__stamp" id="mStampWrap" hidden>热点榜<span class="stamp-time" id="mStamp"></span></span>
+  </header>
+
+  <main>
+    <p class="status" id="status">正在读取数据…</p>
+    <ol class="list" id="list"></ol>
+    <noscript><p class="status">这个页面需要 JavaScript 来读取 hot-news.json。</p></noscript>
+  </main>
+
+  <footer class="colophon">
+    <p class="colophon__source" id="fSource"></p>
+    <p class="colophon__note" id="fNote"></p>
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  var DATA_URL = 'hot-news.json';
+
+  var el = {
+    mDate: document.getElementById('mDate'),
+    mDay: document.getElementById('mDay'),
+    mStampWrap: document.getElementById('mStampWrap'),
+    mStamp: document.getElementById('mStamp'),
+    status: document.getElementById('status'),
+    list: document.getElementById('list'),
+    fSource: document.getElementById('fSource'),
+    fNote: document.getElementById('fNote')
+  };
+
+  // heat rule width: full at #1, tightening 8 points per rank
+  function ruleWidth(rank) {
+    return Math.max(12, 100 - (rank - 1) * 8);
+  }
+
+  // "11:57" for today, "10月4日 15:02" for anything older
+  function stamp(item, listDate) {
+    if (!item.time) return '';
+    if (!item.date || item.date === listDate) return item.time;
+    var parts = item.date.split('-');
+    return parseInt(parts[1], 10) + '月' + parseInt(parts[2], 10) + '日 ' + item.time;
+  }
+
+  function tier(rank) {
+    if (rank === 1) return 'story--lead';
+    if (rank <= 3) return 'story--warm';
+    return '';
+  }
+
+  function rankClass(rank) {
+    if (rank === 1) return 'rank-1';
+    if (rank === 2) return 'rank-2';
+    if (rank === 3) return 'rank-3';
+    return 'rank-late';
+  }
+
+  function render(data) {
+    var items = Array.isArray(data.items) ? data.items : [];
+    if (!items.length) throw new Error('数据里没有 items');
+
+    document.title = '热点榜 · ' + (data.dateLabel || data.date || '');
+
+    el.mDate.textContent = data.dateLabel || data.date || '热点榜';
+    el.mDay.textContent = data.weekday || '';
+    if (data.updatedAt) {
+      el.mStamp.textContent = data.updatedAt + ' 更新';
+      el.mStampWrap.hidden = false;
+    }
+
+    var frag = document.createDocumentFragment();
+
+    items.forEach(function (item, i) {
+      var rank = item.rank || i + 1;
+
+      var li = document.createElement('li');
+      li.className = 'story ' + tier(rank);
+      li.style.setProperty('--w', ruleWidth(rank) + '%');
+
+      var num = document.createElement('span');
+      num.className = 'rank ' + rankClass(rank);
+      num.textContent = rank;
+      li.appendChild(num);
+
+      var body = document.createElement('div');
+      body.className = 'story__body';
+
+      var h2 = document.createElement('h2');
+      h2.className = 'story__title';
+
+      var a = document.createElement('a');
+      a.className = 'story__link';
+      a.href = item.url || '#';
+      a.textContent = item.title || '';
+      if (item.url) {
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        var hint = document.createElement('span');
+        hint.className = 'sr-only';
+        hint.textContent = '（在新窗口打开）';
+        a.appendChild(hint);
+      }
+      h2.appendChild(a);
+      body.appendChild(h2);
+
+      var time = stamp(item, data.date);
+      if (item.source || time) {
+        var meta = document.createElement('p');
+        meta.className = 'story__meta';
+        if (item.source) {
+          var s = document.createElement('span');
+          s.className = 'meta-source';
+          s.textContent = item.source;
+          meta.appendChild(s);
+        }
+        if (time) meta.appendChild(document.createTextNode('　' + time));
+        body.appendChild(meta);
+      }
+
+      if (item.summary) {
+        var sum = document.createElement('p');
+        sum.className = 'story__summary';
+        sum.textContent = item.summary;
+        body.appendChild(sum);
+      }
+
+      li.appendChild(body);
+      frag.appendChild(li);
+    });
+
+    el.list.appendChild(frag);
+    el.status.remove();
+
+    if (data.source) el.fSource.textContent = '来源：' + data.source;
+    el.fNote.textContent = '共 ' + items.length + ' 条' + (data.note ? '　' + data.note : '');
+  }
+
+  fetch(DATA_URL)
+    .then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(render)
+    .catch(function (err) {
+      // file:// blocks fetch, so this usually means the page was opened directly
+      el.status.innerHTML =
+        '没能读取 <code>' + DATA_URL + '</code>（' + String(err.message || err) + '）。' +
+        '用本地服务器打开就能正常加载：<br><code>python3 -m http.server 8000</code>' +
+        '　然后访问 <code>http://localhost:8000/hot-news.html</code>';
+    });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "name": "腾讯新闻",
+  "slug": "tencent-news",
+  "version": "1.4.0",
+  "installedAt": 1789558907167,
+  "source": "marketplace",
+  "examples_zh": [
+    "今天有什么热点新闻？",
+    "帮我汇总下24小时内科技、财经领域的新闻",
+    "帮我核实下，碱性食物可以抗癌吗？"
+  ],
+  "examples_en": [
+    "What's trending in the news today?",
+    "Summarize tech and finance news from the last 24 hours",
+    "Fact-check this: can alkaline foods prevent cancer?"
+  ],
+  "description_zh": "腾讯新闻综合信息服务，集成新闻、事实查证、天气、天气预警、体育赛程和高考志愿填报能力。",
+  "description_en": "Tencent News integrated information service for news, fact-checking, weather and weather alerts, sports schedules and results, and Gaokao admission-data queries and application planning.",
+  "iconSource": "tencent-news"
+}

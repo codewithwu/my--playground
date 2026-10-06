@@ -1,0 +1,20 @@
+{
+  "name": "腾讯天气查询",
+  "slug": "tencent-weather",
+  "version": "1.0.6",
+  "installedAt": 1789558907628,
+  "source": "marketplace",
+  "examples_zh": [
+    "XX城市最近天气如何？",
+    "查询本地天气预报",
+    "明天会下雨吗？"
+  ],
+  "examples_en": [
+    "What's the weather like in <city> recently?",
+    "Check the local weather forecast",
+    "Will it rain tomorrow?"
+  ],
+  "description_zh": "中国各地实时天气、天气预报和天气预警信息查询。",
+  "description_en": "Weather information lookup tool covering Chinese cities and counties. Use when the user queries current weather, forecasts, or weather alerts.",
+  "iconSource": "tencent-weather"
+}

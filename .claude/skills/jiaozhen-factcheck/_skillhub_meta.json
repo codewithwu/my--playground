@@ -1,0 +1,20 @@
+{
+  "name": "腾讯较真事实查证",
+  "slug": "jiaozhen-factcheck",
+  "version": "1.0.4",
+  "installedAt": 1789556932546,
+  "source": "marketplace",
+  "examples_zh": [
+    "帮我核实下，碱性食物可以抗癌吗？",
+    "你可以问“XX是真的吗？”",
+    "吃黑芝麻能让头发变黑，这是真的吗？"
+  ],
+  "examples_en": [
+    "Fact-check this: can alkaline foods prevent cancer?",
+    "Try asking \"Is <claim> true?\"",
+    "Does eating black sesame turn hair black? Is that true?"
+  ],
+  "description_zh": "事实查证，真实性判断，谣言识别，真假辨别。",
+  "description_en": "Fact-checking tool for verifying the factual accuracy of input statements or suspicious claims. Use this tool when determining whether information is true or false, identifying rumors, or assessing content credibility. Returns a verification conclusion.",
+  "iconSource": "jiaozhen-factcheck"
+}

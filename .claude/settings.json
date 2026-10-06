@@ -5,5 +5,11 @@
   "statusLine": {
     "type": "command",
     "command": "python3 .claude/hooks/statusline.py"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(python3 .claude/skills/tencent-news/scripts/publish-hot.py)",
+      "Bash(sh .claude/skills/tencent-news/scripts/open-page.sh:*)"
+    ]
   }
 }
