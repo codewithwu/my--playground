@@ -9,7 +9,9 @@
   "permissions": {
     "allow": [
       "Bash(python3 .claude/skills/tencent-news/scripts/publish-hot.py)",
-      "Bash(sh .claude/skills/tencent-news/scripts/open-page.sh:*)"
+      "Bash(sh .claude/skills/tencent-news/scripts/open-page.sh:*)",
+      "Bash(sh scripts/news.sh:*)",
+      "Bash(sh .claude/skills/tencent-news/scripts/run-cli.sh:*)"
     ]
   }
 }
