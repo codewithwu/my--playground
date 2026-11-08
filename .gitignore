@@ -1,0 +1,11 @@
+# Python 虚拟环境（uv 创建，含 torch，约 800MB）
+.venv/
+
+# HyperFrames 本地媒体缓存与产物
+.hyperframes/
+*.mp4
+*.wav
+*.mp3
+
+# 工具缓存
+.cache/
