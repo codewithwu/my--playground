@@ -15,21 +15,21 @@
 HyperFrames 查找 Python 的顺序是：`HYPERFRAMES_PYTHON` 环境变量 → `PATH` 上的 `python3` / `python`。
 不设这个变量，CLI 找不到 venv，`doctor` 会把 Kokoro / MusicGen 报成 "Not installed"，实际调用也会静默降级。
 
-```bash
-export HYPERFRAMES_PYTHON="/home/cooper/github/my--playground/.venv/bin/python"
-```
-
-**使用 hyperframes 前临时加上这一行即可**（当前尚未写入 `~/.bashrc`）。
-`~/.bashrc` 的持久化写法：
+该变量**已持久化写入 `~/.bashrc`（第 132 行）**，新开的终端自动生效：
 
 ```bash
 export HYPERFRAMES_PYTHON="/home/cooper/github/my--playground/.venv/bin/python"
 ```
+
+当前 shell 若还没加载，跑一次 `source ~/.bashrc` 补上即可。
+
+注意：`~/.bashrc` 默认对非交互式 shell 提前 return，所以 `bash -c "..."` 这类调用拿不到这个变量；
+遇到这种情况，在命令前临时加一次 `export HYPERFRAMES_PYTHON=...` 或改用登录 shell（`bash -lc`）。
 
 验证：
 
 ```bash
-HYPERFRAMES_PYTHON=/home/cooper/github/my--playground/.venv/bin/python npx hyperframes doctor
+npx hyperframes doctor
 ```
 
 ### Python 虚拟环境（uv）
